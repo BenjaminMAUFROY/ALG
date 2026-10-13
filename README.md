@@ -2,7 +2,7 @@
 
 ### Organisation du projet 
 ALG/  
-├── make_fof.py
+├── make_fof.py  
 ├── index_colored_fm_index.py  
 ├── query.py  
 └── tests.py  
@@ -15,18 +15,18 @@ python index_colored_fm_index.py -i fof_file -o serialized_file -m <generalized|
 [-h] [other params]
 
 o Entrées :
-∗ -i un fichier FOF2 (contenant dans notre cas N lignes, chacune décrivant un génome Gi).
-∗ -o le fichier de sortie contenant la structure d’indexation s´erialis´ee3
-∗ -m la méthode d’indexation utilisée, choix entre generalized pour l’approche 1 (FM-index
-généralisé et color array) et bf pour l’approche 2 avec les filtres de bloom.
-∗ -h affiche l’aide et ne fait rien.
+∗ -i un fichier FOF2 (contenant dans notre cas N lignes, chacune décrivant un génome Gi).  
+∗ -o le fichier de sortie contenant la structure d’indexation s´erialis´ee3  
+∗ -m la méthode d’indexation utilisée, choix entre generalized pour l’approche 1 
+(FM-index généralisé et color array) et bf pour l’approche 2 avec les filtres de bloom.  
+∗ -h affiche l’aide et ne fait rien.  
 
 O Sortie :
-∗ la structure d’indexation sérialisée, dans le fichier serialized file (voir Section 6.2),
-∗ des informations de performances sorties dans la console comme indiqu´e ci-dessous.
-OUT TIME_BUILD: temps pour créer l'index avant s´erialisation
-OUT TIME_SERIALISATION: temps pour sérialiser l'index
-D’autres informations pourront ˆetre ajout´ees tant que ces lignes apparaissent sous ce format.
+∗ la structure d’indexation sérialisée, dans le fichier serialized file (voir Section 6.2),  
+∗ des informations de performances sorties dans la console comme indiqué ci-dessous.  
+OUT TIME_BUILD: temps pour créer l'index avant sérialisation  
+OUT TIME_SERIALISATION: temps pour sérialiser l'index  
+D’autres informations pourront ˆetre ajout´ees tant que ces lignes apparaissent sous ce format.  
 
 
 ### Programme query.py
@@ -34,12 +34,12 @@ D’autres informations pourront ˆetre ajout´ees tant que ces lignes apparaiss
 python query.py -i serialized_file -q query.fa -o result.txt [-h]
 
 o Entrées :
-∗ -i le fichier contenant la structure d’indexation s´erialis´ee
-∗ -q un fichier fasta contenant une ou plusieurs s´equences `a requˆeter : un ensemble de s´equences
-génomiques sur l’alphabet Σ = {A, C, G, T }.
+∗ -i le fichier contenant la structure d’indexation sérialisée  
+∗ -q un fichier fasta contenant une ou plusieurs s´equences à requêter : un ensemble de séquences
+génomiques sur l’alphabet Σ = {A, C, G, T }.  
 ∗ -o le fichier de sortie contenant les r´esultats de pr´esence/absence entre chaque s´equence
-requête et chaque g´enome Gi.
-∗ -h affiche l’aide et ne fait rien.
+requête et chaque g´enome Gi.  
+∗ -h affiche l’aide et ne fait rien.  
 
 o Sortie :
 Un fichier de sortie au format txt, avec (1) un header pour les indexes des g´enomes, s´epar´es
@@ -53,8 +53,8 @@ sinon)
 
 ### Commencer par la création du FOF (File of files)
 
-Constituer un dossier "genomes" avec des génomes choisis.
-Par exemple avec les commandes suivantes qui vous permettent de récupérer des fragments de genomes humains :
+Constituer un dossier "genomes" avec des génomes choisis.  
+Par exemple avec les commandes suivantes qui vous permettent de récupérer des fragments de genomes humains :  
 
 ""
 sudo install curl
@@ -65,7 +65,7 @@ curl -s "https://rest.ensembl.org/sequence/region/human/X:50000000..50001000:1?c
 curl -s "https://rest.ensembl.org/sequence/region/human/MT:1..1000:1?content-type=text/x-fasta" -o chrMT_fragment.fa
 ""
 
-Puis créer votre fof à l'aide du script make_fof.py joint au projet. La commande utilisée pour le projet :
+Puis créer votre fof à l'aide du script make_fof.py joint au projet. La commande utilisée pour le projet :  
 
 ""
     python make_fof.py ./genomes                   
