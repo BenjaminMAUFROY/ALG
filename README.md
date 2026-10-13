@@ -2,7 +2,7 @@
 
 ### Organisation du projet 
 ALG/
-├── index_colored_fm_index.py
+├── index_colored_fm_index.py  
 ├── query.py
 └── tests.py
 
