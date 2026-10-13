@@ -14,17 +14,17 @@ python index_colored_fm_index.py -i fof_file -o serialized_file -m <generalized|
 [-h] [other params]
 
 o Entrées :
-∗ -i un fichier FOF2 (contenant dans notre cas N lignes, chacune d´ecrivant un g´enome Gi).
+∗ -i un fichier FOF2 (contenant dans notre cas N lignes, chacune décrivant un génome Gi).
 ∗ -o le fichier de sortie contenant la structure d’indexation s´erialis´ee3
-∗ -m la m´ethode d’indexation utilis´ee, choix entre generalized pour l’approche 1 (FM-index
-g´en´eralis´e et color array) et bf pour l’approche 2 avec les filtres de bloom.
+∗ -m la méthode d’indexation utilisée, choix entre generalized pour l’approche 1 (FM-index
+généralisé et color array) et bf pour l’approche 2 avec les filtres de bloom.
 ∗ -h affiche l’aide et ne fait rien.
 
 O Sortie :
-∗ la structure d’indexation s´erialis´ee, dans le fichier serialized file (voir Section 6.2),
+∗ la structure d’indexation sérialisée, dans le fichier serialized file (voir Section 6.2),
 ∗ des informations de performances sorties dans la console comme indiqu´e ci-dessous.
-OUT TIME_BUILD: temps pour cr´eer l'index avant s´erialisation
-OUT TIME_SERIALISATION: temps pour s´erialiser l'index
+OUT TIME_BUILD: temps pour créer l'index avant s´erialisation
+OUT TIME_SERIALISATION: temps pour sérialiser l'index
 D’autres informations pourront ˆetre ajout´ees tant que ces lignes apparaissent sous ce format.
 
 
