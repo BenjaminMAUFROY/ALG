@@ -1,10 +1,11 @@
 # PROJET ALG - MAUFROY Benjamin & COUVRAT Maëlle
 
 ### Organisation du projet 
-ALG/
+ALG/  
+├── make_fof.py
 ├── index_colored_fm_index.py  
-├── query.py
-└── tests.py
+├── query.py  
+└── tests.py  
 
 ## MODE D'EMPLOI DU PROGRAMME
 
