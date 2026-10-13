@@ -49,3 +49,23 @@ sinon)
 
 
 ## Exemples pour reproduire le code du rapport
+
+### Commencer par la création du FOF (File of files)
+
+Constituer un dossier "genomes" avec des génomes choisis.
+Par exemple avec les commandes suivantes qui vous permettent de récupérer des fragments de genomes humains :
+
+""
+sudo install curl
+curl -s "https://rest.ensembl.org/sequence/region/human/21:30000000..30001000:1?content-type=text/plain" -o fragment_chr21.txt
+curl -s "https://rest.ensembl.org/sequence/region/human/1:1000000..1001000:1?content-type=text/x-fasta" -o chr1_fragment.fa
+curl -s "https://rest.ensembl.org/sequence/region/human/7:117000000..117001000:1?content-type=text/x-fasta" -o chr7_fragment.fa
+curl -s "https://rest.ensembl.org/sequence/region/human/X:50000000..50001000:1?content-type=text/x-fasta" -o chrX_fragment.fa
+curl -s "https://rest.ensembl.org/sequence/region/human/MT:1..1000:1?content-type=text/x-fasta" -o chrMT_fragment.fa
+""
+
+Puis créer votre fof à l'aide du script make_fof.py joint au projet. La commande utilisée pour le projet :
+
+""
+    python make_fof.py ./genomes                   
+""
