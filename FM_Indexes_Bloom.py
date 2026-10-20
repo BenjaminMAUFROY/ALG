@@ -63,9 +63,46 @@ class FM_Index:
             count = self.get_n()[self.get_bwt()[count]] + self.get_r()[count] - 1
         return "".join(seq[::-1])
 
+    # Recherche un caractère dans la BWT en partant du debut
+    def find_first(self, start, stop, letter):
+        """Première ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
+        for line in range(start, stop + 1):
+            if self.get_bwt()[line] == letter:
+                return line
+        return -1
+
+    # Recherche un caractere dans la BWT en partant de la fin
+    def find_last(self, start, stop, letter):
+        """Dernière ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
+        for line in range(stop, start - 1, -1):
+            if self.get_bwt()[line] == letter:
+                return line
+        return -1
+
+    # Recherche un motif dans la seq
+    def backward_search(self, motif):
+        start = 0
+        stop = len(self.get_bwt()) - 1
+
+        for letter in reversed(motif):
+            first = self.find_first(self.get_bwt(), start, stop, letter)
+            if first == -1:
+                return False
+            last = self.find_last(self.get_bwt(), start, stop, letter)
+
+            start = self.get_n()[self.get_bwt()[letter]] + self.get_r()[first] - 1
+            stop = self.get_n()[self.get_bwt()[letter]] + self.get_r()[last] - 1
+
+        return True
+
     # Compare un motif à la sequence indexée
     def contains(self, motif):
-        return motif in self.bwt_2_seq()
+        """
+        Indique si une séquence est présente.
+
+        Sortie : Bolléen
+        """
+        return self.backward_search(motif)
 
 
     # Définition des accesseurs
