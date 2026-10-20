@@ -3,7 +3,8 @@ from pydivsufsort import divsufsort
 import mmh3
 from bitarray import bitarray
 import os
-
+import pickle as pkl
+import math
 
 # Classe FM_Index
 class FM_Index:
@@ -118,43 +119,49 @@ class BloomFilter:
         return self._M
 
 
+# Fonction de calcul de la taille de la matrice du filtre de bloom
+def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
+    return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
+
+
 # Fonction d'indexation de génome en N FM_Index et N filtres de Bloom
-def indexation_2(path_or_filename: str, file_or_folder = "file"):
-    if file_or_folder == "file":
-        with open(path_or_filename) as filin:
-            genome_list = filin.readlines().strip()
-    elif file_or_folder == "folder":
-        file_list = os.listdir(path_or_filename)
-        genome_list = list()
-        for file in file_list:
-            with open(path_or_filename + file) as filin:
-                genome_list.append()
-
-    
+def bf(FOF_name: str) -> list:
+    index = []
+    with open(FOF_name) as filin:
+        for line in filin:
+            genome = ""
+            with open(line) as seq:
+                for line in seq:
+                    if not line.startswith(">"):
+                        genome += line.strip()
 
 
 
+ 
 if __name__ == "__main__":
 
     # Test classe FM_Index
-    seq = FM_Index("GGCGGCACCGC$")
-    sa = seq.get_sa()
-    bwt = seq.get_bwt()
-    r = seq.get_r()
-    n = seq.get_n()
-    fm_index = seq.fm_index()
-    print(sa)
-    print(bwt)
-    print(r)
-    print(n)
-    print(fm_index)
-    print(seq.contains("GGC"))
+    # seq = FM_Index("GGCGGCACCGC$")
+    # sa = seq.get_sa()
+    # bwt = seq.get_bwt()
+    # r = seq.get_r()
+    # n = seq.get_n()
+    # fm_index = seq.fm_index()
+    # print(sa)
+    # print(bwt)
+    # print(r)
+    # print(n)
+    # print(fm_index)
+    # print(seq.contains("GGC"))
 
-    # Test classe filtres de Bloom
-    filtre = BloomFilter(7, 100000000)
-    filtre.add("ACTTTGACC")
-    for i in range(100000000):
-        if filtre.get_matrice()[i]:
-            print(f"my table {i} is true")
-    filtre.add_kmers_from_sequence("acatactacgacgtacgatcgacgatcgatctatcagcgttggctactgatgctagtctgtttagcgactgtacg", 5)
+    # # Test classe filtres de Bloom
+    # filtre = BloomFilter(7, 100000000)
+    # filtre.add("ACTTTGACC")
+    # for i in range(100000000):
+    #     if filtre.get_matrice()[i]:
+    #         print(f"my table {i} is true")
+    # filtre.add_kmers_from_sequence("acatactacgacgtacgatcgacgatcgatctatcagcgttggctactgatgctagtctgtttagcgactgtacg", 5)
 
+    # Test indexation_2
+    index = indexation_2("./queries_coli_10k_len100bp.fa", 10000000)
+    print(len(index))
