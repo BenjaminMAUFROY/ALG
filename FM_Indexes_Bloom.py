@@ -2,8 +2,6 @@
 from pydivsufsort import divsufsort
 import mmh3
 from bitarray import bitarray
-import os
-import pickle as pkl
 import math
 
 # Classe FM_Index
@@ -163,6 +161,13 @@ def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
 
 # Fonction d'indexation de génome en N FM_Index et N filtres de Bloom
 def bf(FOF_name: str) -> list:
+
+    # Parametres des filtres de bloom et fm_index
+    h = 7           # Nombre de fonction de hashages
+    fp_rate = 0.01  # Ratio de faux positifs tolérés
+    kmer = 31       # Taille des kmers
+
+    # Indexation
     index = []
     with open(FOF_name) as filin:
         for line in filin:
@@ -171,9 +176,19 @@ def bf(FOF_name: str) -> list:
                 for line in seq:
                     if not line.startswith(">"):
                         genome += line.strip()
+                n_kmer = len(genome)
+                m = bf_size(n_kmer, h, fp_rate)
+                filtre_bloom_genome = BloomFilter(h, m).add_kmers_from_sequence(genome, kmer)
+                fm_index_genome = FM_Index(genome).fm_index()
+                index.append({"Filtre_Bloom": filtre_bloom_genome, "FM_index": fm_index_genome,})
+   
+    return
 
-
-
+    # Serialisation
+    
+        # Temps de serialisation
+    
+    # pkl.dump(index, open("genomes_indexees.dumped", "wb"))
  
 if __name__ == "__main__":
 
@@ -200,5 +215,5 @@ if __name__ == "__main__":
     # filtre.add_kmers_from_sequence("acatactacgacgtacgatcgacgatcgatctatcagcgttggctactgatgctagtctgtttagcgactgtacg", 5)
 
     # Test indexation_2
-    index = indexation_2("./queries_coli_10k_len100bp.fa", 10000000)
-    print(len(index))
+    # index = bf("./queries_coli_10k_len100bp.fa", 10000000)
+    # print(len(index))
