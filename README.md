@@ -1,5 +1,20 @@
 # PROJET ALG - MAUFROY Benjamin & COUVRAT Maëlle
 
+### RESTE A FAIRE
+- Dans model.py:
+  - Commentaire
+  - Docstring
+  - Mise au propre
+  - Ajouter la fonction d'indexation generalized
+- Dans index_colored_fm_index.py
+  - Compléter les commentaires/docstring
+  - Mettre au propre
+  - Ajouter la méthode d'indexation generalized
+  - Tester si ça fonctionne
+- Faire query.py
+- Faire test.py
+- Faire le rapport
+
 ### Organisation du projet 
 ALG/  
 ├── make_fof.py  
