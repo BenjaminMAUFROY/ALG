@@ -8,11 +8,11 @@ import argparse
 import os
 import pathlib
 
-# Main
+# Arguments
 parser  = argparse.ArgumentParser(
     description = "Ce programme indexe les séquences nucléotidiques contenues dans un ensemble de fichiers fasta entrée et les stocks dans un fichier .txt en sortie"
 )
-parser.add_argument("-i", "--fof_file", help = "Un chemin vers un fichier en entrée de type File of Files", metavar = "filin")
+parser.add_argument("-i", "--fof_file", type = str, help = "Un chemin vers un fichier en entrée de type File of Files", metavar = "filin")
 parser.add_argument("-o", "--serialized_file", type = str, help = "Un chemin vers un fichier en sortie de type .txt", default = "/index.txt", metavar = "filout")
 parser.add_argument("-m", "--indexation_method", choices = ["generalized", "bf",], help = "Méthode d'indexation. Pour plus d'informations: --help_method <generalized|bf>")
 parser.add_argument("--help_methods", choices = ["generalized", "bf"], default = "", help = "Description des options de méthodes d'indexation disponibles")
@@ -28,7 +28,7 @@ elif args.help_methods == "bf":
         "Chaque génome est indexé sous la forme d'un FM_index et d'un filtre de Bloom associé"
     )
 
-
+# Main
 # Indexation 
 elif args.help_methods == "":
     
@@ -39,7 +39,7 @@ elif args.help_methods == "":
     # Indexation avec la méthode "bf"
     elif args.m == "bf":
         index = model.bf(args.filin)
-        print(time.process_time())
+        print(f"OUT TIME_BUILD: {time.process_time()}")
 
 # Serialisation
 # Vérification de l'existence du fichier de sortie. Si non, création d'un fichier par défaut dans le dossier contenant le FoF.
@@ -52,6 +52,7 @@ else:
     else:
         os.mkdir(args.filout)
         storage_path = args.filout
-        
+
+# Création du fichier de sortie avec pickle
 pickle.dump(index, storage_path)
-print(time.process_time())
+print(f"OUT TIME_SERIALISATION: {time.process_time()}")

@@ -145,6 +145,13 @@ class BloomFilter:
             self.add(seq[i:i+k])
         return self.get_matrice()
 
+    def query(self, item):
+        for seed_id in range(self.get_H()):
+            key = mmh3.hash(item, seed_id, signed=False) % self.get_M()
+            if self.get_matrice()[key]:
+                return True
+        return False
+
     # Définition des accesseurs
     def get_H(self):
         return self._H
@@ -190,7 +197,7 @@ def bf(FOF_name: str) -> list:
     
     # pkl.dump(index, open("genomes_indexees.dumped", "wb"))
  
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
     # Test classe FM_Index
     # seq = FM_Index("GGCGGCACCGC$")
