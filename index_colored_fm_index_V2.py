@@ -80,8 +80,18 @@ if args.fof_file is None or args.indexation_method is None:
 # Indexation avec la méthode "generalized"
 # (concaténation des génomes, un seul FM-index et un color_array)
 if args.indexation_method == "generalized":
-    # Méthode pas encore implémentée : on quitte avec un code d'erreur
-    sys.exit("A faire : la méthode 'generalized' n'est pas encore implémentée.")
+    start_build = time.process_time()
+
+    # Concaténation des génomes du FoF
+    sequence, genome_of, paths = model.build_from_fof(args.fof_file)
+
+    # FM-index + color array
+    fm = model.FM_Index(sequence, genome_of)
+    index = {"FM_index": fm.fm_index(), "Color_array": fm.get_color(), "paths": paths,}
+
+    # Durée CPU de la construction de l'index
+    print(f"OUT TIME_BUILD: {time.process_time() - start_build}")
+    print("Méthode 'generalized' terminée.")
 
 # Indexation avec la méthode "bf"
 # (un FM-index et un filtre de Bloom par génome)

@@ -4,11 +4,11 @@
 - Dans model.py:
   - Compléter les commentaires/docstring
   - Mettre au propre
-  - Ajouter la fonction d'indexation generalized
+  - Ajouter la fonction d'indexation generalized (X)
 - Dans index_colored_fm_index.py
-  - Ajouter la méthode d'indexation generalized
+  - Ajouter la méthode d'indexation generalized (X)
   - Tester si ça fonctionne
-- Dans query.py --> Je fais cette partie (Maelle)
+- Dans query.py 
   - Compléter les commentaires/docstring
   - Mettre au propre
   - Tester si ça fonction
@@ -19,6 +19,7 @@
 ALG/  
 ├── make_fof.py  
 ├── index_colored_fm_index.py  
+├── model.py  
 ├── query.py  
 └── tests.py  
 

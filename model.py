@@ -8,12 +8,13 @@ import math
 class FM_Index:
 
     # Initialisation
-    def __init__(self, seq):
+    def __init__(self, seq, genome_of=None):
         self._seq = seq
         self._sa = self.create_sa()
         self._bwt = self.create_bwt()
         self._n = self.create_n()
         self._r = self.create_r()
+        self._color = self.create_color(genome_of)
         self._fm_index = self.fm_index()
 
     # Méthodes
@@ -48,6 +49,19 @@ class FM_Index:
             r.append(count[letter])
         return r
 
+    def create_color(self, genome_of):
+        """
+        Construit le color array : génome d'origine de chaque suffixe, aligné sur le suffix array.
+        
+        Entrée : liste genome_of, avec la couleur de chaque position de la séquence
+        (None pour un FM_Index sans color array)
+        Sortie : np.ndarray color array 
+        (ou None si genome_of est None)
+        """
+        if genome_of is None:
+            return None
+        return [genome_of[position] for position in self.get_sa()]
+    
     # FM_Index
     def fm_index(self):
         return {"bwt": self.get_bwt(), "n": self.get_n(), "r": self.get_r(),}
@@ -116,6 +130,8 @@ class FM_Index:
         return self._sa
     def get_fm_index(self):
         return self._fm_index
+    def get_color(self):
+        return self._color
 
 
 class BloomFilter:
@@ -165,6 +181,56 @@ class BloomFilter:
 def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
     return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
 
+# Fonction pour la lecture du FOF
+def read_fof(fof_path):
+    """
+    Lit le FOF et retourne la liste des chemins de fichiers.
+    
+    Entrée : FOF 
+    Sortie : liste des chemins de fichiers.
+
+    """
+    with open(fof_path) as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+def read_fasta(path):
+    """
+    Lit un FASTA et retourne la séquence en majuscules, restreinte à ACGT.
+    
+    Entrée : Fichier FASTA indiqué par le FOF
+    Sortie : Séquence contenu dans le fichier FASTA
+   
+    """
+    parts = []
+    with open(path) as f:
+        for line in f:
+            if not line.startswith(">"):
+                parts.append(line.strip().upper())
+                
+    return "".join(c for c in "".join(parts) if c in "ACGT") #sécurité pour s'assurer d'avoir bien une séquence
+
+
+def build_from_fof(fof_path):
+    """
+    Concatène tous les génomes du FOF, et rajoute "$" à la fin de chacun d'entre eux.
+
+    Entrée : Adresse du fof fournit.
+    Sorties: 
+    - (str) parts = tout les génomes concaténés du FOF, séparé par un "$".
+    - (list) genome_of[i] = indice du génome auquel appartient la position i.
+    - (list) paths = chemin des génomes, un indice de cette liste = la couleur (color arrray)
+    """
+    paths = read_fof(fof_path)
+    parts = []
+    genome_of = []
+
+    for i, path in enumerate(paths):
+        seq = read_fasta(path) + "$"
+        parts.append(seq)
+        genome_of.extend([i] * len(seq))
+
+    return "".join(parts), genome_of, paths
 
 # Fonction d'indexation de génome en N FM_Index et N filtres de Bloom
 def bf(FOF_name: str) -> list:
