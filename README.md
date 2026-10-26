@@ -6,15 +6,12 @@
   - Mettre au propre
   - Ajouter la fonction d'indexation generalized
 - Dans index_colored_fm_index.py
-  - Compléter les commentaires/docstring
-  - Mettre au propre
   - Ajouter la méthode d'indexation generalized
   - Tester si ça fonctionne
 - Dans query.py --> Je fais cette partie (Maelle)
   - Compléter les commentaires/docstring
   - Mettre au propre
   - Tester si ça fonction
-- Pour tous les fichiers, même si pas demander, peut-être faire un petit fichier pytest ?
 - Faire test.py
 - Faire le rapport
 
