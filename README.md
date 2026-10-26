@@ -10,7 +10,7 @@
   - Mettre au propre
   - Ajouter la méthode d'indexation generalized
   - Tester si ça fonctionne
-- Dans query.py
+- Dans query.py --> Je fais cette partie (Maelle)
   - Compléter les commentaires/docstring
   - Mettre au propre
   - Tester si ça fonction
