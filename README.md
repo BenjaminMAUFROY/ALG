@@ -4,9 +4,7 @@
 - Dans model.py:
   - Compléter les commentaires/docstring
   - Mettre au propre
-  - Ajouter la fonction d'indexation generalized (X)
 - Dans index_colored_fm_index.py
-  - Ajouter la méthode d'indexation generalized (X)
   - Tester si ça fonctionne
 - Dans query.py 
   - Compléter les commentaires/docstring

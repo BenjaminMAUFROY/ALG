@@ -75,38 +75,7 @@ class FM_Index:
             count = self.get_n()[self.get_bwt()[count]] + self.get_r()[count] - 1
         return "".join(seq[::-1])
 
-    # Recherche un caractère dans la BWT en partant du debut
-    def find_first(self, start, stop, letter):
-        """Première ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
-        for line in range(start, stop + 1):
-            if self.get_bwt()[line] == letter:
-                return line
-        return -1
-
-    # Recherche un caractere dans la BWT en partant de la fin
-    def find_last(self, start, stop, letter):
-        """Dernière ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
-        for line in range(stop, start - 1, -1):
-            if self.get_bwt()[line] == letter:
-                return line
-        return -1
-
-    # Recherche un motif dans la seq
-    def backward_search(self, motif):
-        start = 0
-        stop = len(self.get_bwt()) - 1
-
-        for letter in reversed(motif):
-            first = self.find_first(self.get_bwt(), start, stop, letter)
-            if first == -1:
-                return False
-            last = self.find_last(self.get_bwt(), start, stop, letter)
-
-            start = self.get_n()[self.get_bwt()[letter]] + self.get_r()[first] - 1
-            stop = self.get_n()[self.get_bwt()[letter]] + self.get_r()[last] - 1
-
-        return True
-
+    
     # Compare un motif à la sequence indexée
     def contains(self, motif):
         """
@@ -161,13 +130,6 @@ class BloomFilter:
             self.add(seq[i:i+k])
         return self.get_matrice()
 
-    def query(self, item):
-        for seed_id in range(self.get_H()):
-            key = mmh3.hash(item, seed_id, signed=False) % self.get_M()
-            if self.get_matrice()[key]:
-                return True
-        return False
-
     # Définition des accesseurs
     def get_H(self):
         return self._H
@@ -175,11 +137,6 @@ class BloomFilter:
         return self._matrice
     def get_M(self):
         return self._M
-
-
-# Fonction de calcul de la taille de la matrice du filtre de bloom
-def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
-    return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
 
 # Fonction pour la lecture du FOF
 def read_fof(fof_path):
@@ -232,6 +189,10 @@ def build_from_fof(fof_path):
 
     return "".join(parts), genome_of, paths
 
+# Fonction de calcul de la taille de la matrice du filtre de bloom
+def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
+    return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
+
 # Fonction d'indexation de génome en N FM_Index et N filtres de Bloom
 def bf(FOF_name: str) -> list:
 
@@ -245,7 +206,7 @@ def bf(FOF_name: str) -> list:
     with open(FOF_name) as filin:
         for line in filin:
             genome = ""
-            with open(line) as seq:
+            with open(line.strip()) as seq:
                 for line in seq:
                     if not line.startswith(">"):
                         genome += line.strip()
@@ -257,36 +218,42 @@ def bf(FOF_name: str) -> list:
    
     return index
 
-    # Serialisation
-    
-        # Temps de serialisation
-    
-    # pkl.dump(index, open("genomes_indexees.dumped", "wb"))
- 
-# if __name__ == "__main__":
+# Méthode de requêtage d'un motif dans un filtre de Bloom
+def query(matrice, item, h = 7):
+    for seed_id in range(h):
+        key = mmh3.hash(item, seed_id, signed=False) % len(matrice)
+        if matrice[key]:
+            return True
+    return False
 
-    # Test classe FM_Index
-    # seq = FM_Index("GGCGGCACCGC$")
-    # sa = seq.get_sa()
-    # bwt = seq.get_bwt()
-    # r = seq.get_r()
-    # n = seq.get_n()
-    # fm_index = seq.fm_index()
-    # print(sa)
-    # print(bwt)
-    # print(r)
-    # print(n)
-    # print(fm_index)
-    # print(seq.contains("GGC"))
+# Recherche un caractère dans la BWT en partant du debut
+def find_first(bwt, start, stop, letter):
+    """Première ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
+    for line in range(start, stop + 1):
+        if bwt[int(line)] == letter:
+            return line
+    return -1
 
-    # # Test classe filtres de Bloom
-    # filtre = BloomFilter(7, 100000000)
-    # filtre.add("ACTTTGACC")
-    # for i in range(100000000):
-    #     if filtre.get_matrice()[i]:
-    #         print(f"my table {i} is true")
-    # filtre.add_kmers_from_sequence("acatactacgacgtacgatcgacgatcgatctatcagcgttggctactgatgctagtctgtttagcgactgtacg", 5)
+# Recherche un caractere dans la BWT en partant de la fin
+def find_last(bwt, start, stop, letter):
+    """Dernière ligne de [start, stop] dont la BWT vaut letter, sinon -1."""
+    for line in range(stop, start - 1, -1):
+        if bwt[int(line)] == letter:
+            return line
+    return -1
 
-    # Test indexation_2
-    # index = bf("./queries_coli_10k_len100bp.fa", 10000000)
-    # print(len(index))
+# Recherche un motif dans la seq
+def backward_search(fm_index, motif):
+    start = 0
+    stop = len(fm_index["bwt"]) - 1
+
+    for letter in reversed(motif):
+        first = find_first(fm_index["bwt"], start, stop, letter)
+        if first == -1:
+            return False
+        last = find_last(fm_index["bwt"], start, stop, letter)
+
+        start = fm_index["n"][letter] + fm_index["r"][first] - 1
+        stop = fm_index["n"][letter] + fm_index["r"][last] - 1
+
+    return True

@@ -3,8 +3,8 @@
 # import
 import pickle
 import time
-import model
 import argparse
+import model
 import os
 import pathlib
 
@@ -30,8 +30,11 @@ else:
         storage_path = args.outer_file
 
 # Désérialisation
-index = pickle.load(args.index)
-print(f"OUT TIME_DESERIALISATION: {time.process_time()}")
+start_deserialisation = time.process_time()
+with open(args.index, "rb") as filin:
+    index = pickle.load(filin)
+
+print(f"OUT TIME_DESERIALISATION: {time.process_time() - start_deserialisation}")
 
 # Requêtage
 # Ouverture du fichier de requêtage
@@ -50,19 +53,24 @@ seq_list = seq_list[1:]
 
 kmer = 31
 results = {} # Création d'un dictionnaire associant les séquences requêtes aux génomes où elles sont présentes
+i_gen = 0
+
+start_query = time.process_time()
 
 for i, query in enumerate(seq_list):
     results[f"query{i+1}"] = []
+    i_gen += 1
     for j, genome in enumerate(index):
         results[f"query{i+1}"].append("0\t")
-        if genome["Filtre_Bloom"].query(query[:kmer]):
-            if genome["FM_index"].backward_search(query):
+        if model.query(genome["Filtre_Bloom"], query[:kmer]):
+            if model.backward_search(genome["FM_index"], query):
                 results[f"query{i+1}"][j] = "1\t"
-print(f"OUT TIME_QUERY: {time.process_time()}")
+
+print(f"OUT TIME_QUERY: {time.process_time() - start_query}")
 
 # Création du fichier de sortie
-i_gen = 3
-with open("test.txt", "w") as querin:
+
+with open(args.outer_file, "w") as querin:
     querin.write("i_gen\t")
     for i in range(i_gen):
         querin.write(f"{i+1}\t")

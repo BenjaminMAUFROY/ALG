@@ -91,7 +91,6 @@ if args.indexation_method == "generalized":
 
     # Durée CPU de la construction de l'index
     print(f"OUT TIME_BUILD: {time.process_time() - start_build}")
-    print("Méthode 'generalized' terminée.")
 
 # Indexation avec la méthode "bf"
 # (un FM-index et un filtre de Bloom par génome)
