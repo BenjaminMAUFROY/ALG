@@ -47,9 +47,19 @@ with open(args.query, "r") as filin:
             seq = ""
         else:
             seq += line.strip()
+    if seq :
+        seq_list.append(seq)
 seq_list = seq_list[1:]
 
 # Requêtage de l'index
+
+# Détection de la méthode d'indexation : pour generalized = dictionnaire
+generalized_index = None
+if isinstance(index, dict) and "Color_array" in index:
+    generalized_index = index
+    index = []  # la boucle des filtres de Bloom ci-dessous n'a alors rien à parcourir
+
+
 
 kmer = 31
 results = {} # Création d'un dictionnaire associant les séquences requêtes aux génomes où elles sont présentes
@@ -63,6 +73,23 @@ for i, query in enumerate(seq_list):
         if model.query(genome["Filtre_Bloom"], query[:kmer]):
             if model.backward_search(genome["FM_index"], query):
                 results[f"query{i+1}"][j] = "1\t"
+
+
+# Requêtage pour index generalized
+if generalized_index is not None:
+    fm_index = generalized_index["FM_index"]
+    color = generalized_index["Color_array"]
+    nb_genomes = len(generalized_index["paths"])
+
+    for i, query in enumerate(seq_list):
+        results[f"query{i+1}"] = ["0\t"] * nb_genomes
+        interval = model.backward_search_interval(fm_index, query)
+
+        if interval is not None:
+            start, stop = interval
+            for genome_index in set(int(c) for c in color[start:stop + 1] if c is not None):
+                results[f"query{i+1}"][genome_index] = "1\t"
+
 
 print(f"OUT TIME_QUERY: {time.process_time() - start_query}")
 print(results)

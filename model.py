@@ -402,3 +402,33 @@ def backward_search(fm_index, motif):
         stop = fm_index["n"][letter] + fm_index["r"][last] - 1
 
     return True
+
+def backward_search_interval(fm_index, motif):
+    """
+    Recherche un motif dans une séquence indexée par recherche arrière (backward search).
+
+    Entrée :
+    - (dict) fm_index : dictionnaire {"bwt", "n", "r"} (voir FM_Index.fm_index).
+    - (str) motif : séquence à rechercher.
+    Sortie : L'interval où le motif est présent dans la séquence indexée.
+    """
+    start = 0
+    stop = len(fm_index["bwt"]) - 1
+
+    for letter in reversed(motif):
+        if letter not in fm_index["n"]:
+            return None
+
+        first = find_first(fm_index["bwt"], start, stop, letter)
+        if first == -1:
+            return None
+
+        last = find_last(fm_index["bwt"], start, stop, letter)
+
+        start = fm_index["n"][letter] + fm_index["r"][first] - 1
+        stop = fm_index["n"][letter] + fm_index["r"][last] - 1
+
+        if start > stop:
+            return None
+
+    return start, stop
