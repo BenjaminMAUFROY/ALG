@@ -181,12 +181,12 @@ class BloomFilter:
 def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
     return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
 
-# Fonction pour la lecture du FOF
+# Fonctions pour la lecture du FOF
 def read_fof(fof_path):
     """
     Lit le FOF et retourne la liste des chemins de fichiers.
     
-    Entrée : FOF 
+    Entrée : chemin vers le FOF 
     Sortie : liste des chemins de fichiers.
 
     """
