@@ -53,13 +53,11 @@ seq_list = seq_list[1:]
 
 kmer = 31
 results = {} # Création d'un dictionnaire associant les séquences requêtes aux génomes où elles sont présentes
-i_gen = 0
 
 start_query = time.process_time()
 
 for i, query in enumerate(seq_list):
     results[f"query{i+1}"] = []
-    i_gen += 1
     for j, genome in enumerate(index):
         results[f"query{i+1}"].append("0\t")
         if model.query(genome["Filtre_Bloom"], query[:kmer]):
@@ -67,16 +65,19 @@ for i, query in enumerate(seq_list):
                 results[f"query{i+1}"][j] = "1\t"
 
 print(f"OUT TIME_QUERY: {time.process_time() - start_query}")
+print(results)
 
 # Création du fichier de sortie
 
+i_gen = len(index)
+
 with open(args.outer_file, "w") as querin:
-    querin.write("i_gen\t")
+    querin.write("i_gen\t\t")
     for i in range(i_gen):
         querin.write(f"{i+1}\t")
     querin.write("\n\n")
     for j, values in enumerate(results):
-        querin.write(f"query{j+1}\t")
+        querin.write(f"query{j+1}\t\t")
         for result in results[values]:
             querin.write(result)
         querin.write("\n")
