@@ -45,7 +45,6 @@ class FM_Index:
     - _fm_index (dict) : regroupe la BWT et les tables n et r.
     """
 
-    # Initialisation
     def __init__(self, seq, genome_of=None):
         """
         Construit le suffix array, la BWT, les tables n et r, le color array et le dictionnaire FM-index.
@@ -67,7 +66,6 @@ class FM_Index:
         self._fm_index = self.fm_index()
 
     # Méthodes
-    # Création du suffixe_array
     def create_sa(self):
         """
         Calcule le suffix array de la séquence avec divsufsort.
@@ -77,7 +75,6 @@ class FM_Index:
         """
         return divsufsort(self.get_seq())
 
-    # Création de la BWT
     def create_bwt(self):
         """
         Construit la transformée de Burrows-Wheeler (BWT).
@@ -90,7 +87,6 @@ class FM_Index:
         """
         return [self.get_seq()[i-1] for i in self.get_sa()]
 
-    # Création de n
     def create_n(self):
         """
         Construit la table n : pour chaque lettre, nombre de caractères de la séquence
@@ -100,7 +96,6 @@ class FM_Index:
 
         Sortie : (dict) {"$": 0, "A": ..., "C": ..., "G": ..., "T": ...}
         """
-        # Nombre d'occurrences de chaque lettre dans la BWT
         count = {"A":0, "C":0, "G":0, "T":0, "$":0,}
         n = {"$":0}
         for letter in self.get_bwt():
@@ -114,7 +109,6 @@ class FM_Index:
 
         return n
 
-    # Création de r
     def create_r(self):
         """
         Construit la table r : pour chaque position de la BWT, rang (à partir de 1)
@@ -125,7 +119,6 @@ class FM_Index:
 
         Sortie : (list) liste d'entiers de même longueur que la BWT.
         """
-        # Compteur courant d'occurrences de chaque lettre
         count = {"A":0, "C":0, "G":0, "T":0, "$":0}
         r = []
         for letter in self.get_bwt():
@@ -145,10 +138,10 @@ class FM_Index:
         # Pas de color array demandé
         if genome_of is None:
             return None
+        
         # Couleur de chaque suffixe = couleur de sa position de départ
         return [genome_of[position] for position in self.get_sa()]
     
-    # FM_Index
     def fm_index(self):
         """
         Regroupe dans un dictionnaire les éléments nécessaires à la recherche de motifs.
@@ -158,70 +151,28 @@ class FM_Index:
         """
         return {"bwt": self.get_bwt(), "n": self.get_n(), "r": self.get_r(),}
 
-    # Reconstruit la sequence à partir de la BWT
-    def bwt_2_seq(self):
-        """
-        Reconstruit la séquence d'origine à partir de la BWT, de n et de r.
-
-        On part de la ligne 0 (suffixe "$"), on lit la lettre de la BWT, puis on passe
-        à la ligne suivante par LF-mapping. Les lettres sont ainsi retrouvées de la fin
-        vers le début de la séquence, d'où l'inversion finale.
-        Cette reconstruction suppose un unique "$" dans la séquence.
-
-        Sortie : (str) séquence terminée par "$".
-        """
-        # La séquence est reconstruite à l'envers, en commençant par "$"
-        seq = ["$",]
-        # Ligne courante de la matrice triée (ligne 0 = suffixe "$")
-        count = 0
-        for _ in range(len(self.get_bwt())-1):
-            seq.append(self.get_bwt()[count])
-            # LF-mapping : ligne dont le suffixe commence par la lettre lue
-            count = self.get_n()[self.get_bwt()[count]] + self.get_r()[count] - 1
-        # Remise de la séquence dans le bon sens
-        return "".join(seq[::-1])
-
-    
-    # Compare un motif à la sequence indexée
-    def contains(self, motif):
-        """
-        Indique si un motif est présent dans la séquence indexée.
-
-        Entrée : (str) motif à rechercher.
-        Sortie : Booléen
-        """
-        return self.backward_search(motif)
-
-
     # Définition des accesseurs
     def get_seq(self):
-        """Retourne la séquence indexée."""
         return self._seq
     def get_bwt(self):
-        """Retourne la BWT (liste de caractères)."""
         return self._bwt
     def get_n(self):
-        """Retourne la table n (dictionnaire)."""
         return self._n
     def get_r(self):
-        """Retourne la table r (liste d'entiers)."""
         return self._r
     def get_sa(self):
-        """Retourne le suffix array."""
         return self._sa
     def get_fm_index(self):
-        """Retourne le dictionnaire FM-index {"bwt", "n", "r"}."""
         return self._fm_index
     def get_color(self):
-        """Retourne le color array (ou None s'il n'a pas été construit)."""
         return self._color
 
 
 class BloomFilter:
     """Filtre de Bloom destiné à stocker les k-mers d'une séquence.
 
-    Un élément ajouté est haché H fois (MurmurHash3, une graine par fonction)
-    et les H positions obtenues, modulo M, sont mises à 1 dans un tableau de bits.
+    Un élément ajouté est haché H fois et les H positions obtenues,
+    sont mises à 1 dans un tableau de bits.
 
     Attributs :
     - _H (int) : nombre de fonctions de hachage.
@@ -245,8 +196,7 @@ class BloomFilter:
         matrice.setall(0)
         self._matrice = matrice
 
-    # Méthodes
-    # Création de add qui remplit la matrice de bit de 1 en fonction de la sortie des fonctions de hashage sur un kmer item    
+    # Méthodes  
     def add(self, item):
         """
         Ajoute un élément (un k-mer) au filtre.
@@ -260,8 +210,7 @@ class BloomFilter:
             # Position dans le tableau de bits pour cette graine
             key = mmh3.hash(item, seed_id, signed=False) % self.get_M()
             self.get_matrice()[key] = 1
-
-    # Méthode qui renvoie une matrice de Bloom remplie à partir d'une séquence qui est découpée en kmer de taille k  
+ 
     def add_kmers_from_sequence(self, seq, k):
         """
         Découpe une séquence en k-mers (fenêtre glissante de pas 1) et les ajoute tous au filtre.
@@ -272,23 +221,19 @@ class BloomFilter:
         Sortie : (bitarray) tableau de bits du filtre, une fois rempli
         (et non l'objet BloomFilter lui-même).
         """
-        # Une fenêtre de taille k par position de départ possible
         for i in range(len(seq)-k+1):
             self.add(seq[i:i+k])
         return self.get_matrice()
 
     # Définition des accesseurs
     def get_H(self):
-        """Retourne le nombre de fonctions de hachage."""
         return self._H
     def get_matrice(self):
-        """Retourne le tableau de bits (bitarray)."""
         return self._matrice
     def get_M(self):
-        """Retourne la taille du tableau de bits."""
         return self._M
 
-# Fonction pour la lecture du FOF
+
 def read_fof(fof_path):
     """
     Lit le FOF et retourne la liste des chemins de fichiers.
@@ -335,7 +280,6 @@ def build_from_fof(fof_path):
     genome_of = []
 
     for i, path in enumerate(paths):
-        # Séquence du génome i, terminée par "$"
         seq = read_fasta(path) + "$"
         parts.append(seq)
         # Chaque position de ce génome (y compris le "$") reçoit la couleur i
@@ -343,7 +287,7 @@ def build_from_fof(fof_path):
 
     return "".join(parts), genome_of, paths
 
-# Fonction de calcul de la taille de la matrice du filtre de bloom
+
 def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
     """
     Calcule la taille (en bits) d'un filtre de Bloom pour un taux de faux positifs donné.
@@ -359,10 +303,11 @@ def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
     """
     return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
 
-# Fonction d'indexation de génome en N FM_Index et N filtres de Bloom
+
 def bf(FOF_name: str) -> list:
     """
-    Indexe chaque génome du FOF sous la forme d'un filtre de Bloom de k-mers et d'un FM-index.
+    Indexe chaque génome du FOF sous la forme d'un filtre de Bloom des k-mers dudit génome
+    et d'un FM-index.
 
     Entrée : (str) FOF_name, chemin du FOF (un chemin de fichier FASTA par ligne).
     Sortie : (list) une entrée par génome, dans l'ordre du FOF :
@@ -381,7 +326,7 @@ def bf(FOF_name: str) -> list:
         for line in filin:
             genome = ""
             with open(line.strip()) as seq:
-                # Concaténation des lignes de séquence (les en-têtes ">" sont ignorés)
+                # Concaténation des lignes de séquence
                 for line in seq:
                     if not line.startswith(">"):
                         genome += line.strip() + "$"
@@ -396,7 +341,7 @@ def bf(FOF_name: str) -> list:
    
     return index
 
-# Méthode de requêtage d'un motif dans un filtre de Bloom
+
 def query(matrice, item, h = 7):
     """
     Interroge un filtre de Bloom pour savoir si un k-mer est présent.
@@ -407,7 +352,6 @@ def query(matrice, item, h = 7):
     - (int) h : nombre de fonctions de hachage, identique à celui utilisé à la construction.
     Sortie : Booléen
     """
-    test = []
     for seed_id in range(h):
         key = mmh3.hash(item, seed_id, signed=False) % len(matrice)
         if not matrice[key]:
@@ -434,10 +378,6 @@ def find_last(bwt, start, stop, letter):
 def backward_search(fm_index, motif):
     """
     Recherche un motif dans une séquence indexée par recherche arrière (backward search).
-
-    Le motif est lu de droite à gauche. On maintient l'intervalle [start, stop]
-    de lignes de la matrice triée dont les suffixes commencent par la partie du
-    motif déjà lue. Cet intervalle est mis à jour à chaque lettre par LF-mapping.
 
     Entrée :
     - (dict) fm_index : dictionnaire {"bwt", "n", "r"} (voir FM_Index.fm_index).
