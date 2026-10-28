@@ -13,6 +13,9 @@ Deux méthodes d'indexation sont prévues (option ``-m`` / ``--indexation_method
 - ``bf`` : chaque génome est indexé séparément sous la forme d'un FM-index
   associé à un filtre de Bloom.
 
+Dans les deux cas, les séquences sont lues en majuscules et restreintes aux
+bases A, C, G et T.
+
 Utilisation :
     python3 index_colored_fm_index.py -i <fichier_fof> -m <generalized|bf> [-o <fichier_sortie>]
     python3 index_colored_fm_index.py --help_methods <generalized|bf>
@@ -34,7 +37,9 @@ Sortie :
     Le temps de sérialisation affiché dans la console.
 
 Dépendances :
-    Le module local ``model``, qui doit fournir la fonction ``bf``.
+    Le module local ``model``, qui doit fournir la fonction ``bf`` (méthode
+    ``bf``), ainsi que la fonction ``build_from_fof`` et la classe ``FM_Index``
+    (méthode ``generalized``).
 """
 
 # Imports

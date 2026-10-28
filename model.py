@@ -309,6 +309,10 @@ def bf(FOF_name: str) -> list:
     Indexe chaque génome du FOF sous la forme d'un filtre de Bloom des k-mers dudit génome
     et d'un FM-index.
 
+    Chaque génome est lu avec read_fasta puis terminé par
+    un unique "$", comme dans build_from_fof. Les paramètres sont fixés dans la fonction :
+    7 fonctions de hachage, 1 % de faux positifs et k-mers de taille 31.
+
     Entrée : (str) FOF_name, chemin du FOF (un chemin de fichier FASTA par ligne).
     Sortie : (list) une entrée par génome, dans l'ordre du FOF :
     {"Filtre_Bloom": bitarray du filtre, "FM_index": dictionnaire {"bwt", "n", "r"}}.
@@ -324,20 +328,17 @@ def bf(FOF_name: str) -> list:
     with open(FOF_name) as filin:
         # Une ligne du FOF = un génome
         for line in filin:
-            genome = ""
-            with open(line.strip()) as seq:
-                # Concaténation des lignes de séquence
-                for line in seq:
-                    if not line.startswith(">"):
-                        genome += line.strip() + "$"
-                # Dimensionnement du filtre de Bloom pour ce génome
-                n_kmer = len(genome) - kmer + 1
-                m = bf_size(n_kmer, h, fp_rate)
-                # Filtre de Bloom rempli avec les k-mers du génome
-                filtre_bloom_genome = BloomFilter(h, m).add_kmers_from_sequence(genome, kmer)
-                # FM-index du génome
-                fm_index_genome = FM_Index(genome).fm_index()
-                index.append({"Filtre_Bloom": filtre_bloom_genome, "FM_index": fm_index_genome,})
+            # Lecture du génome : majuscules et restreint à ACGT (comme pour la méthode generalized).
+            # Un seul "$" est ajouté, à la fin du génome (et non à la fin de chaque ligne du FASTA).
+            genome = read_fasta(line.strip()) + "$"
+            # Dimensionnement du filtre de Bloom pour ce génome
+            n_kmer = len(genome) - kmer + 1
+            m = bf_size(n_kmer, h, fp_rate)
+            # Filtre de Bloom rempli avec les k-mers du génome
+            filtre_bloom_genome = BloomFilter(h, m).add_kmers_from_sequence(genome, kmer)
+            # FM-index du génome
+            fm_index_genome = FM_Index(genome).fm_index()
+            index.append({"Filtre_Bloom": filtre_bloom_genome, "FM_index": fm_index_genome,})
    
     return index
 
