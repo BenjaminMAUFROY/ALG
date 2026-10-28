@@ -1,18 +1,5 @@
 # PROJET ALG - MAUFROY Benjamin & COUVRAT Maëlle
 
-### RESTE A FAIRE
-- Dans model.py:
-  - Compléter les commentaires/docstring
-  - Mettre au propre
-- Dans index_colored_fm_index.py
-  - Tester si ça fonctionne
-- Dans query.py 
-  - Compléter les commentaires/docstring
-  - Mettre au propre
-  - Tester si ça fonction
-- Faire test.py
-- Faire le rapport
-
 ### Organisation du projet 
 ALG/  
 ├── make_fof.py  

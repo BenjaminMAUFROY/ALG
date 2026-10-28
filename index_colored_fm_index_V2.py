@@ -51,6 +51,11 @@ import pickle
 import sys
 import time
 
+# Paramètres par défaut du filtre de Bloom
+n_hashage = 7
+fp_rate = 0.01
+kmer_size = 31
+
 # Arguments
 # Définition de l'interface en ligne de commande.
 parser  = argparse.ArgumentParser(description = "Ce programme indexe les séquences nucléotidiques contenues dans un ensemble de fichiers fasta entrée et les stocks dans un fichier en sortie")
@@ -103,7 +108,7 @@ elif args.indexation_method == "bf":
     start_build = time.process_time()
 
     # Construction de l'index à partir du fichier FoF
-    index = model.bf(args.fof_file)
+    index = model.bf(args.fof_file, h = n_hashage, fp_rate = fp_rate, kmer = kmer_size)
 
     # Durée CPU de la construction de l'index
     print(f"OUT TIME_BUILD: {time.process_time() - start_build}")

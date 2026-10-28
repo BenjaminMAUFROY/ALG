@@ -304,24 +304,19 @@ def bf_size(n_kmer: int, H = 7, fp_rate = 0.01) -> int:
     return  math.ceil(- H * (n_kmer / (math.log(1 - fp_rate ** (1 / H)))))
 
 
-def bf(FOF_name: str) -> list:
+def bf(FOF_name: str, h = 7, fp_rate = 0.01, kmer = 31) -> list:
     """
     Indexe chaque génome du FOF sous la forme d'un filtre de Bloom des k-mers dudit génome
     et d'un FM-index.
 
     Chaque génome est lu avec read_fasta puis terminé par
-    un unique "$", comme dans build_from_fof. Les paramètres sont fixés dans la fonction :
+    un unique "$", comme dans build_from_fof. Les paramètres par défaut de la fonction :
     7 fonctions de hachage, 1 % de faux positifs et k-mers de taille 31.
 
     Entrée : (str) FOF_name, chemin du FOF (un chemin de fichier FASTA par ligne).
     Sortie : (list) une entrée par génome, dans l'ordre du FOF :
     {"Filtre_Bloom": bitarray du filtre, "FM_index": dictionnaire {"bwt", "n", "r"}}.
     """
-
-    # Parametres des filtres de bloom et fm_index
-    h = 7           # Nombre de fonction de hashages
-    fp_rate = 0.01  # Ratio de faux positifs tolérés
-    kmer = 31       # Taille des kmers
 
     # Indexation
     index = []
