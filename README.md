@@ -6,7 +6,8 @@ ALG/
 ├── make_fof.py | Script pour construire un FOF (File of files) à partir d'un fichier de séquences  
 ├── index_colored_fm_index_V2.py  | Programme d'indexation : construit l'index et le sérialise  
 ├── model.py  | Bibliothèque : classes `FM_Index` (avec color array) et `BloomFilter`, lecture du FOF et des FASTA, fonction `bf` d'indexation    
-└── query.py  | Programme de requête : interroge un index sérialisé   
+├── query.py  | Programme de requête : interroge un index sérialisé   
+└── Rapport.pdf | Rapport d'analyses sur le jeux de données fournis permettant d'évaluer le programme  
 
 ----
 
