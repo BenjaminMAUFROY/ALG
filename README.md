@@ -145,24 +145,18 @@ Les requêtes `bf` doivent être au moins aussi longues que la taille des k-mers
 _____________________
 
 
-## Reproduire les résultats du rapport
+## Reproduire les résultats du rapport (en construction...)
 
-Les commandes ci-dessous ce basent sur le jeux de données fournis sur Moodle dans le cadre de ce projet. À adapter aux jeux de données de chaque expérience.
+Les commandes ci-dessous ce basent sur le jeux de données fournis sur Moodle dans le cadre de ce projet. Les commandes sont à adapter aux jeux de données de chaque expérience.
 
 **1. Construire les deux index et relever les temps**
 
 ```
-python3 index_colored_fm_index.py -i genomes.fof -o sortie/index_generalized.pkl -m generalized
-python3 index_colored_fm_index.py -i genomes.fof -o sortie/index_bf.pkl -m bf
+python3 index_colored_fm_index.py -i monfof.fof -o sortie/index_generalized.pkl -m generalized
+python3 index_colored_fm_index.py -i monfof.fof -o sortie/index_bf.pkl -m bf
 ```
 
-**2. Comparer les temps de construction et de sérialisation (graphique)**
-
-Version simple (modifier les trois variables en haut du fichier, puis lancer) :
-
-```
-python3 bench_simple.py
-```
+.....
 
 Version complète (plusieurs répétitions, plusieurs jeux de données, nombre de génomes croissant) :
 
@@ -174,7 +168,7 @@ python3 bench_index.py -f genomes.fof -n 1 2 3 5 -r 5
 
 Le graphique est enregistré dans `comparaison.png` et un tableau de résultats dans `comparaison.csv`.
 
-**3. Comparer les tailles des structures**
+**2. Comparer les tailles des structures**
 
 La taille mémoire est estimée par la taille du fichier sérialisé :
 
@@ -182,7 +176,7 @@ La taille mémoire est estimée par la taille du fichier sérialisé :
 ls -l sortie/index_generalized.pkl sortie/index_bf.pkl
 ```
 
-**4. Comparer les résultats et les temps de requête**
+**3. Comparer les résultats et les temps de requête**
 
 ```
 python3 query.py -i sortie/index_generalized.pkl -q requetes.fa -o sortie/resultat_generalized.txt
