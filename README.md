@@ -1,6 +1,5 @@
 # PROJET ALG - MAUFROY Benjamin & COUVRAT Maëlle
 
----
 
 ### Organisation du projet 
 ALG/  
