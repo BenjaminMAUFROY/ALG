@@ -161,10 +161,10 @@ Les données viennent de Moodle, dans le dossier `data_test`. Il contient 4 jeux
 
 | Jeu | Description |
 |---|---|
-| `coli_10k` | |
-| `coli_100k` | |
-| `random_10k` | |
-| `random_100k` | |
+| `coli_10k` | Séquences d'E.coli |
+| `coli_100k` | Séquences d'E.coli |
+| `random_10k` | Séquences random de ACGT |
+| `random_100k` |  Séquences random de ACGT |
 
 Chaque jeu est interrogé avec deux fichiers de requêtes :
 
