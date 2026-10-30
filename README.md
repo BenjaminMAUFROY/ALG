@@ -145,16 +145,16 @@ Les requêtes `bf` doivent être au moins aussi longues que la taille des k-mers
 _____________________
 
 
-## Reproduire les résultats du rapport 
+# Reproduire les résultats du rapport 
 
 Les commandes ci-dessous ce basent sur le jeux de données fournis sur Moodle dans le cadre de ce projet. Les commandes sont à adapter aux jeux de données de chaque expérience.
 Le script de benchmark automatisé utilisé pour lancer les mesures est optionnel et n'est pas livré avec le projet. Les mesures peuvent être refaites à la main avec les commandes ci-dessous.
 
-Environnement
+#### Environnement
 ·	Python 3
 ·	Bibliothèques : pydivsufsort, mmh3, bitarray, numpy (voir « Installation »). 
 
-Données
+#### Données
 Les données viennent de Moodle, dans le dossier data_test. Il contient 4 jeux de 49 génomes chacun :
 Jeu	Description
 coli_10k	
@@ -168,14 +168,15 @@ Chaque jeu est interrogé avec deux fichiers de requêtes :
 
 Toutes les requêtes sont plus longues que la taille des k-mers (31), condition nécessaire pour la méthode bf.
 
-Mesures relevées
+#### Mesures relevées
 Les temps sont des temps CPU (time.process_time), en secondes, affichés par les scripts :
 Programme	Valeurs affichées
 index_colored_fm_index.py	OUT TIME_BUILD, OUT TIME_SERIALISATION
 query.py	OUT TIME_DESERIALISATION, OUT TIME_QUERY
 
 Le poids d'un index est la taille du fichier .pkl sur disque (ls -l). L'index est construit une seule fois par jeu et par configuration : ses temps et son poids sont répétés pour les deux fichiers de requêtes.
-# 1. Créer les FoF
+
+## 1. Créer les FoF
 Un FoF par jeu, avec make_fof.py :
 python3 make_fof.py ./data_test/coli_10k
 python3 make_fof.py ./data_test/coli_100k
@@ -184,32 +185,38 @@ python3 make_fof.py ./data_test/random_100k
 
 Les FoF utilisés dans les fichiers de résultats sont resultats/fof/<jeu>.fof. 
 
-# 2. Expérience 1 : configuration par défaut (temps_et_poids.txt)
+## 2. Expérience 1 : configuration par défaut (temps_et_poids.txt)
 Paramètres par défaut : fp_rate = 1 % (0.01 dans le code), H = 7, kmer = 31. Pour chaque jeu <jeu> et chaque méthode :
-# Indexation (relever TIME_BUILD et TIME_SERIALISATION)
+
+Indexation (relever TIME_BUILD et TIME_SERIALISATION)
 python3 index_colored_fm_index.py -i resultats/fof/<jeu>.fof -o resultats/index/<jeu>_generalized.pkl -m generalized
 python3 index_colored_fm_index.py -i resultats/fof/<jeu>.fof -o resultats/index/<jeu>_bf.pkl -m bf
 
-Poids des index
+#### Poids des index
+On récupère le poid des index avec l'exemple de commande suivante :
+```
 ls -l resultats/index/<jeu>_generalized.pkl resultats/index/<jeu>_bf.pkl
+```
 
-Requêtage (relever TIME_DESERIALISATION et TIME_QUERY), pour chacun des deux fichiers de requêtes
+#### Requêtage (relever TIME_DESERIALISATION et TIME_QUERY), pour chacun des deux fichiers de requêtes
 python3 query.py -i resultats/index/<jeu>_generalized.pkl -q data_test/<jeu>/queries_<jeu>_len100bp.fa  -o resultats/sortie/<jeu>_generalized_100.txt
 python3 query.py -i resultats/index/<jeu>_generalized.pkl -q data_test/<jeu>/queries_<jeu>_len1000bp.fa -o resultats/sortie/<jeu>_generalized_1000.txt
 python3 query.py -i resultats/index/<jeu>_bf.pkl          -q data_test/<jeu>/queries_<jeu>_len100bp.fa  -o resultats/sortie/<jeu>_bf_100.txt
 python3 query.py -i resultats/index/<jeu>_bf.pkl          -q data_test/<jeu>/queries_<jeu>_len1000bp.fa -o resultats/sortie/<jeu>_bf_1000.txt
 
- > Les chemins resultats/index/, resultats/sortie/ et data_test/<jeu>/ sont des exemples à adapter.
+ Remarques :
+ Les chemins resultats/index/, resultats/sortie/ et data_test/<jeu>/ sont des exemples à adapter.
+ L'option -o est déclarée required=True dans index_colored_fm_index.py.
 
-Remarque : l'option -o est déclarée required=True dans index_colored_fm_index.py.
 
-
-# 3. Expérience 2 : variation des paramètres du filtre de Bloom (temps_et_poids_variations.txt)
-Seule la méthode bf est concernée. Un seul paramètre varie à la fois, à partir de la configuration par défaut (fp_rate = 1 %, H = 7, kmer = 31) :
+## 3. Expérience 2 : variation des paramètres du filtre de Bloom (temps_et_poids_variations.txt)
+Seule la méthode bf est concernée pour les variations de paramètres. Un seul paramètre varie à la fois, à partir de la configuration par défaut (fp_rate = 1 %, H = 7, kmer = 31) :
+```
 Série	Valeurs	Valeurs fixées
 1 : fp_rate	0,01 ; 0,1 ; 1 ; 5 ; 10 %	H = 7, kmer = 31
 2 : H	3 ; 5 ; 7 ; 9 ; 11	fp_rate = 1 %, kmer = 31
 3 : kmer	11 ; 15 ; 20 ; 25 ; 31	fp_rate = 1 %, H = 7
+```
 
 La configuration par défaut est commune aux trois séries : elle n'est mesurée qu'une fois, soit 13 configurations distinctes. La méthode generalized est mesurée comme référence ; elle ne dépend pas de ces paramètres.
 Où modifier les paramètres. fp_rate est exprimé en fraction dans le code (1 % = 0.01). Les valeurs doivent être identiques à l'indexation et au requêtage :
@@ -218,17 +225,18 @@ H	n_hashage	H
 fp_rate	fp_rate	(non utilisé)
 kmer	kmer_size	kmer
 
-
 Exemple pour la série H, jeu coli_10k (à répéter avec chaque valeur, après avoir modifié n_hashage dans index_colored_fm_index.py et H dans query.py) :
+```
 python3 index_colored_fm_index.py -i resultats/fof/coli_10k.fof -o resultats/index/coli_10k_bf_H3.pkl -m bf
 python3 query.py -i resultats/index/coli_10k_bf_H3.pkl -q data_test/coli_10k/queries_coli_10k_len100bp.fa -o resultats/sortie/coli_10k_bf_H3_100.txt
+```
 
 Répétitions et médianes. Chaque mesure (indexation complète + requêtage) est répétée 3 fois, les répétitions étant entrelacées entre configurations : 
 Les valeurs du fichier sont les médianes des 3 répétitions ; les essais bruts figurent en fin de fichier.
 Bits par k-mer. Valeur théorique du filtre, donnée par bf_size :
 bits/k-mer = -H / ln(1 - fp_rate^(1/H))
 
-# 4. Contrôles
+## 4. Contrôles
 ·	Poids d'index identique d'une répétition à l'autre.
 ·	Résultats de query.py identiques à une référence : 336 / 336 requêtages comparés (toutes configurations, toutes répétitions). 
 ·	Variabilité entre répétitions, (max − min) / médiane, médiane sur l'ensemble des mesures : TIME_BUILD 8 %, TIME_SERIALISATION 12 %, TIME_DESERIALISATION 11 %, TIME_QUERY 15 %. Les écarts de temps inférieurs à cet ordre de grandeur ne sont donc pas significatifs.
@@ -237,7 +245,7 @@ diff resultats/sortie/<jeu>_generalized_100.txt resultats/sortie/<jeu>_bf_100.tx
 
 > Aucune différence n'est attendue. Les deux méthodes doivent fournir les mêmes résultats.
 
-Format des fichiers de résultats
+#### Format des fichiers de résultats
 ·	temps_et_poids.txt : un bloc par jeu, méthode et fichier de requêtes, puis un récapitulatif tabulé (jeu, methode, requetes, n_requetes, TIME_BUILD, TIME_SERIALISATION, poids_index_octets, TIME_DESERIALISATION, TIME_QUERY).
 ·	temps_et_poids_variations.txt : protocole, contrôles, un bloc par jeu et fichier de requêtes (référence generalized et séries fp_rate, H, kmer), un récapitulatif des médianes tabulé, puis les essais bruts (une ligne par répétition).
 Paramètres par défaut (méthode bf)
